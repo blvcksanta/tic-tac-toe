@@ -42,7 +42,111 @@ function setIcon(value: string): 'cross' | 'circle' | '' {
 
 function makeMove(rowIndex: number, itemIndex: number) {
   playingField.value[rowIndex]![itemIndex] = currentPlayer.value
-  currentPlayer.value = currentPlayer.value === 'x' ? 'o' : 'x'
+  // currentPlayer.value = currentPlayer.value === 'x' ? 'o' : 'x'
+
+  if (isXWin.value || isOWin.value || isDraw.value) return
+
+  const rrr = randomInteger(1, 10)
+  const rowO = ytr(playingField.value, 'o')
+  const colO = ytr(columns.value, 'o')
+  const mdiO = zxc(mainDiagonal.value, 'o')
+  const rdiO = zxc(reverseDiagonal.value, 'o')
+  const rowX = ytr(playingField.value, 'x')
+  const colX = ytr(columns.value, 'x')
+  const mdiX = zxc(mainDiagonal.value, 'x')
+  const rdiX = zxc(reverseDiagonal.value, 'x')
+
+  if (rowO.length) {
+    playingField.value[rowO[0]!]![rowO[1]!] = 'o'
+    return
+  }
+
+  if (colO.length) {
+    playingField.value[colO[1]!]![colO[0]!] = 'o'
+    return
+  }
+
+  if (mdiO !== null) {
+    playingField.value[mdiO]![mdiO] = 'o'
+    return
+  }
+
+  if (rdiO !== null) {
+    const asd = reverseDiagonal.value.length - 1 - rdiO
+
+    playingField.value[rdiO]![asd] = 'o'
+    return
+  }
+
+  if (rowX.length) {
+    playingField.value[rowX[0]!]![rowX[1]!] = 'o'
+    return
+  }
+
+  if (colX.length) {
+    playingField.value[colX[1]!]![colX[0]!] = 'o'
+    return
+  }
+
+  if (mdiX !== null) {
+    playingField.value[mdiX]![mdiX] = 'o'
+    return
+  }
+
+  if (rdiX !== null) {
+    const asd = reverseDiagonal.value.length - 1 - rdiX
+
+    playingField.value[rdiX]![asd] = 'o'
+    return
+  }
+
+  if (rrr > 5 && !playingField.value[1]![1]) {
+    playingField.value[1]![1] = 'o'
+    return
+  }
+
+  const { randomRowIndex, randomItemIndex } = generateRandomIndex()
+  playingField.value[randomRowIndex]![randomItemIndex] = 'o'
+}
+
+function ytr(matrix: string[][], target: 'x' | 'o') {
+  return matrix
+    .map((row, rowIndex) => {
+      const has = row.filter((item) => item === target).length === 2
+      const emptyCellIndex = row.findIndex((item) => !item)
+
+      if (emptyCellIndex === -1 || !has) return []
+
+      return [rowIndex, emptyCellIndex]
+    })
+    .flat()
+}
+
+function zxc(array: string[], target: 'x' | 'o') {
+  const has = array.filter((item) => item === target).length === 2
+
+  if (!has) return null
+
+  const index = array.findIndex((item) => !item)
+
+  return index === -1 ? null : index
+}
+
+function generateRandomIndex() {
+  const randomRowIndex = randomInteger(0, 2)
+  const randomItemIndex = randomInteger(0, 2)
+  const isEmptyCell = !playingField.value[randomRowIndex]![randomItemIndex]
+
+  if (!isEmptyCell) {
+    return generateRandomIndex()
+  }
+
+  return { randomRowIndex, randomItemIndex }
+}
+
+function randomInteger(min: number, max: number) {
+  const rand = min + Math.random() * (max + 1 - min)
+  return Math.floor(rand)
 }
 
 function findMatchesInMatrix(matrix: string[][], target: 'x' | 'o') {
