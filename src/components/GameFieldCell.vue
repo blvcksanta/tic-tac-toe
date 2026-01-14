@@ -16,31 +16,16 @@ const isDisabled = computed(() => props.disabled || !!props.icon)
 <template>
   <button
     :disabled="isDisabled"
-    :class="[$style.btn, icon && $style[icon]]"
+    :class="[$style.cell, icon && $style[icon]]"
     @click="emits('click')"
   />
 </template>
 
 <style module lang="scss">
-$line-with: 10px;
-
-%asd {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: $line-with;
-  height: 100%;
-
-  border-radius: calc($line-with / 2);
-}
-
-.btn {
+.cell {
   cursor: pointer;
   padding: 0;
   border: none;
-  width: 100px;
-  height: 100px;
   box-sizing: content-box;
   background-color: transparent;
 
@@ -53,16 +38,15 @@ $line-with: 10px;
 .cross {
   position: relative;
 
-  &::after {
-    @extend %asd;
-    transform: translateX(-50%) rotate(45deg);
-    background: #7d71a3;
-  }
-
   &::before {
-    @extend %asd;
-    transform: translateX(-50%) rotate(-45deg);
-    background: #7d71a3;
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url(../assets/icons/cross-min.svg) no-repeat center / 80%;
+    animation: fadeIn 0.25s ease-in-out forwards;
   }
 }
 
@@ -72,12 +56,21 @@ $line-with: 10px;
   &::before {
     content: '';
     position: absolute;
-    top: 10px;
-    left: 10px;
-    right: 10px;
-    bottom: 10px;
-    border-radius: 50%;
-    border: $line-with solid #f3746d;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url(../assets/icons/circle-min.svg) no-repeat center / 80%;
+    animation: fadeIn 0.3s ease-in-out forwards;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }
 </style>

@@ -37,6 +37,7 @@
     "typescript": "~5.9.0",
     "vite": "npm:rolldown-vite@latest",
     "vite-plugin-vue-devtools": "^8.0.5",
+    "vite-svg-loader": "^5.1.0",
     "vue-tsc": "^3.1.5"
   }
 }

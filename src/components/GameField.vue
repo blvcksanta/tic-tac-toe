@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import GameFieldCell from '@/components/GameFieldCell.vue'
+import GameFieldCell from './GameFieldCell.vue'
 
 const currentPlayer = defineModel<'x' | 'o'>({
   default: 'x',
@@ -11,6 +11,8 @@ const playingField = ref([
   ['', '', ''],
   ['', '', ''],
 ])
+
+const isMovePossible = ref(true)
 
 const mainDiagonal = computed(() => playingField.value.map((row, index) => row[index] ?? ''))
 
@@ -40,73 +42,82 @@ function setIcon(value: string): 'cross' | 'circle' | '' {
   return value === 'x' ? 'cross' : value === 'o' ? 'circle' : ''
 }
 
-function makeMove(rowIndex: number, itemIndex: number) {
+async function makeMove(rowIndex: number, itemIndex: number) {
   playingField.value[rowIndex]![itemIndex] = currentPlayer.value
   // currentPlayer.value = currentPlayer.value === 'x' ? 'o' : 'x'
 
   if (isXWin.value || isOWin.value || isDraw.value) return
 
+  const mainPlayer = currentPlayer.value
+  const secondPlayer = mainPlayer === 'x' ? 'o' : 'x'
+
   const rrr = randomInteger(1, 10)
-  const rowO = ytr(playingField.value, 'o')
-  const colO = ytr(columns.value, 'o')
-  const mdiO = zxc(mainDiagonal.value, 'o')
-  const rdiO = zxc(reverseDiagonal.value, 'o')
-  const rowX = ytr(playingField.value, 'x')
-  const colX = ytr(columns.value, 'x')
-  const mdiX = zxc(mainDiagonal.value, 'x')
-  const rdiX = zxc(reverseDiagonal.value, 'x')
+  const rowO = ytr(playingField.value, secondPlayer)
+  const colO = ytr(columns.value, secondPlayer)
+  const mdiO = zxc(mainDiagonal.value, secondPlayer)
+  const rdiO = zxc(reverseDiagonal.value, secondPlayer)
+  const rowX = ytr(playingField.value, mainPlayer)
+  const colX = ytr(columns.value, mainPlayer)
+  const mdiX = zxc(mainDiagonal.value, mainPlayer)
+  const rdiX = zxc(reverseDiagonal.value, mainPlayer)
+
+  isMovePossible.value = false
+
+  await new Promise((resolve) => setTimeout(resolve, 300))
+
+  isMovePossible.value = true
 
   if (rowO.length) {
-    playingField.value[rowO[0]!]![rowO[1]!] = 'o'
+    playingField.value[rowO[0]!]![rowO[1]!] = secondPlayer
     return
   }
 
   if (colO.length) {
-    playingField.value[colO[1]!]![colO[0]!] = 'o'
+    playingField.value[colO[1]!]![colO[0]!] = secondPlayer
     return
   }
 
   if (mdiO !== null) {
-    playingField.value[mdiO]![mdiO] = 'o'
+    playingField.value[mdiO]![mdiO] = secondPlayer
     return
   }
 
   if (rdiO !== null) {
     const asd = reverseDiagonal.value.length - 1 - rdiO
 
-    playingField.value[rdiO]![asd] = 'o'
+    playingField.value[rdiO]![asd] = secondPlayer
     return
   }
 
   if (rowX.length) {
-    playingField.value[rowX[0]!]![rowX[1]!] = 'o'
+    playingField.value[rowX[0]!]![rowX[1]!] = secondPlayer
     return
   }
 
   if (colX.length) {
-    playingField.value[colX[1]!]![colX[0]!] = 'o'
+    playingField.value[colX[1]!]![colX[0]!] = secondPlayer
     return
   }
 
   if (mdiX !== null) {
-    playingField.value[mdiX]![mdiX] = 'o'
+    playingField.value[mdiX]![mdiX] = secondPlayer
     return
   }
 
   if (rdiX !== null) {
     const asd = reverseDiagonal.value.length - 1 - rdiX
 
-    playingField.value[rdiX]![asd] = 'o'
+    playingField.value[rdiX]![asd] = secondPlayer
     return
   }
 
   if (rrr > 5 && !playingField.value[1]![1]) {
-    playingField.value[1]![1] = 'o'
+    playingField.value[1]![1] = secondPlayer
     return
   }
 
   const { randomRowIndex, randomItemIndex } = generateRandomIndex()
-  playingField.value[randomRowIndex]![randomItemIndex] = 'o'
+  playingField.value[randomRowIndex]![randomItemIndex] = secondPlayer
 }
 
 function ytr(matrix: string[][], target: 'x' | 'o') {
@@ -183,13 +194,13 @@ defineExpose({
 </script>
 
 <template>
-  <div>
+  <div :class="$style.gameField">
     <div v-for="(row, rowIndex) in playingField" :key="rowIndex" :class="$style.row">
       <GameFieldCell
         v-for="(item, itemIndex) in row"
         :key="itemIndex"
         :icon="setIcon(item)"
-        :disabled="isXWin || isOWin"
+        :disabled="isXWin || isOWin || !isMovePossible"
         :class="$style.cell"
         @click="makeMove(rowIndex, itemIndex)"
       />
@@ -198,17 +209,36 @@ defineExpose({
 </template>
 
 <style module lang="scss">
-$border: 6px solid rgba(255, 255, 255, 0.5);
+$border: 2px solid #dcd7f0;
+
+.gameField {
+  padding: 15px;
+  border-radius: 25px;
+  box-shadow: 0 0 15px 2px rgba(219, 208, 243, 0.5);
+  background-color: #fff;
+  // outline: 2px solid #dcd7f0;
+  // outline-offset: -6px;
+}
 
 .row {
   line-height: 0;
-}
-
-.cell + .cell {
-  border-left: $border;
+  font-size: 0;
 }
 
 .row + .row {
   border-top: $border;
+}
+
+.cell {
+  height: 80px;
+  width: 80px;
+}
+
+.cell:first-child {
+  border-left: 2px solid transparent;
+}
+
+.cell + .cell {
+  border-left: $border;
 }
 </style>
