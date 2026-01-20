@@ -7,7 +7,24 @@ import svgLoader from 'vite-svg-loader'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [vue(), vueDevTools(), svgLoader()],
+  plugins: [
+    vue(),
+    vueDevTools(),
+    svgLoader({
+      svgo: true,
+      svgoConfig: {
+        plugins: [
+          {
+            name: 'prefixIds',
+            params: {
+              delim: '__',
+              prefixIds: true,
+            },
+          },
+        ],
+      },
+    }),
+  ],
   css: {
     postcss: {
       plugins: [Autoprefixer()],

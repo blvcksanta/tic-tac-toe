@@ -1,7 +1,8 @@
 import { computed, ref } from 'vue'
 
 export function useGameSettings() {
-  const currentPlayer = ref<'x' | 'o'>('x')
+  const firstPlayer = ref<'x' | 'o'>('x')
+  const currentPlayer = ref<'x' | 'o'>(firstPlayer.value)
 
   const playingField = ref([
     ['', '', ''],
@@ -16,24 +17,19 @@ export function useGameSettings() {
   )
 
   const columns = computed(() => {
-    const result: string[][] = []
+    const matrix: string[][] = []
 
     for (let i = 0; i < playingField.value.length; i++) {
-      result.push(playingField.value.map((row) => row[i] ?? ''))
+      matrix.push(playingField.value.map((row) => row[i] ?? ''))
     }
 
-    return result
+    return matrix
   })
 
   const isXWin = computed(() => isWinner('x'))
   const isOWin = computed(() => isWinner('o'))
-  const isDraw = computed(() => {
-    return (
-      !isXWin.value &&
-      !isOWin.value &&
-      playingField.value.every((row) => row.every((item) => !!item))
-    )
-  })
+  const isDraw = computed(() => playingField.value.every((row) => row.every((item) => !!item)))
+  const isGameEnd = computed(() => isXWin.value || isOWin.value || isDraw.value)
 
   function findMatchesInMatrix(matrix: string[][], target: 'x' | 'o') {
     return matrix.some((row) => row.every((elem) => elem === target))
@@ -50,5 +46,39 @@ export function useGameSettings() {
       findMatchesInArray(mainDiagonal.value, target) ||
       findMatchesInArray(reverseDiagonal.value, target)
     )
+  }
+
+  function reset() {
+    currentPlayer.value = firstPlayer.value
+    playingField.value = [
+      ['', '', ''],
+      ['', '', ''],
+      ['', '', ''],
+    ]
+  }
+
+  function changeFirstPlayer() {
+    firstPlayer.value = firstPlayer.value === 'x' ? 'o' : 'x'
+    reset()
+  }
+
+  function changeCurrentPlayer() {
+    currentPlayer.value = currentPlayer.value === 'x' ? 'o' : 'x'
+  }
+
+  return {
+    currentPlayer,
+    firstPlayer,
+    playingField,
+    mainDiagonal,
+    reverseDiagonal,
+    columns,
+    isXWin,
+    isOWin,
+    isDraw,
+    isGameEnd,
+    reset,
+    changeFirstPlayer,
+    changeCurrentPlayer,
   }
 }

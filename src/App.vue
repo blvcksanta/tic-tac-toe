@@ -1,17 +1,18 @@
 <script setup lang="ts">
 import GameMenu from '@/components/GameMenu.vue'
-import GameAsd from '@/components/GameAsd.vue'
+import GameSession from '@/components/GameSession.vue'
 import { ref } from 'vue'
 
-const currentComponent = ref<'menu' | 'asd'>('menu')
+const currentComponent = ref<keyof typeof components>('menu')
 
 const components = {
   menu: GameMenu,
-  asd: GameAsd,
+  session: GameSession,
 }
 
-function onSelectMode() {
-  currentComponent.value = 'asd'
+function onSelectMode(mode: 'one' | 'two' | 'online') {
+  sessionStorage.setItem('mode', mode)
+  currentComponent.value = 'session'
 }
 
 function onStepBack() {

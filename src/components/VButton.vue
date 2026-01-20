@@ -12,10 +12,12 @@ const {
   icon,
   size = 'default',
   iconClass,
+  disabled = false,
 } = defineProps<{
   icon?: Icons
   iconClass?: string | string[]
   size?: 'large' | 'default'
+  disabled?: boolean
 }>()
 
 const emits = defineEmits<{
@@ -32,8 +34,16 @@ const icons: Record<Icons, FunctionalComponent> = {
 </script>
 
 <template>
-  <button :class="[$style.button, $style[`size-${size}`]]" @click="emits('click')">
-    <component :is="icons[icon]" v-if="icon" :class="[$style.icon, iconClass]" />
+  <button
+    :disabled="disabled"
+    :class="[$style.button, $style[`size-${size}`]]"
+    @click="emits('click')"
+  >
+    <span v-if="icon || $slots.icon" :class="$style.iconWrap">
+      <component :is="icons[icon]" v-if="icon" :class="iconClass" />
+      <slot name="icon" />
+    </span>
+
     <slot />
   </button>
 </template>
@@ -56,10 +66,15 @@ const icons: Record<Icons, FunctionalComponent> = {
   background-color: #fff;
 }
 
+.iconWrap {
+  font-size: 0;
+  line-height: 0;
+}
+
 .size-large {
   min-height: 65px;
 
-  .icon {
+  .iconWrap {
     width: 45px;
   }
 }
@@ -69,7 +84,7 @@ const icons: Record<Icons, FunctionalComponent> = {
   border-radius: 8px;
   font-size: 16px;
 
-  .icon {
+  .iconWrap {
     width: 25px;
   }
 }
