@@ -1,26 +1,22 @@
 import { computed, ref } from 'vue'
+import { getRandomInteger } from '@/lib/utils'
 import type { useGameSettings } from './useGameSettings'
+import type { Line, Player, Coord } from '@/types/game.type'
 
 export function useGameSoloMod(gameSettings: ReturnType<typeof useGameSettings>) {
-  const { playingField, isGameEnd, firstPlayer, columns, mainDiagonal, reverseDiagonal } =
-    gameSettings
+  const { board, isGameEnd, firstPlayer, lines } = gameSettings
 
   const isMovePossible = ref(true)
 
   const secondPlayer = computed(() => (firstPlayer.value === 'x' ? 'o' : 'x'))
 
-  function getRandomInteger(min: number, max: number) {
-    const rand = min + Math.random() * (max + 1 - min)
-    return Math.floor(rand)
-  }
+  function getRandomEmptyCell() {
+    const emptyCells: Array<Coord> = []
 
-  function getEmptyCellIndex() {
-    const emptyCells: Array<{ rowIndex: number; cellIndex: number }> = []
-
-    playingField.value.forEach((row, rowIndex) => {
+    board.value.forEach((row, rowIndex) => {
       row.forEach((cell, cellIndex) => {
         if (cell === '') {
-          emptyCells.push({ rowIndex, cellIndex })
+          emptyCells.push({ row: rowIndex, col: cellIndex })
         }
       })
     })
@@ -33,103 +29,60 @@ export function useGameSoloMod(gameSettings: ReturnType<typeof useGameSettings>)
     return emptyCells[randomIndex]
   }
 
-  function findEmptyCellInAlmostFilledLine(matrix: string[][], target: 'x' | 'o') {
-    return matrix
-      .map((row, rowIndex) => {
-        const has = row.filter((item) => item === target).length === 2
-        const emptyCellIndex = row.findIndex((item) => !item)
+  function findEmptyCellInAlmostFilledLine(line: Line, target: Player) {
+    const hasMatches = line.cells.filter((item) => item === target).length === 2
+    const emptyCellIndex = line.cells.findIndex((item) => !item)
 
-        if (emptyCellIndex === -1 || !has) return []
+    if (!hasMatches || emptyCellIndex === -1) return
 
-        return [rowIndex, emptyCellIndex]
-      })
-      .flat()
+    return line.coords[emptyCellIndex]
   }
 
-  function findEmptyIndexInAlmostFilledDiagonal(array: string[], target: 'x' | 'o') {
-    const has = array.filter((item) => item === target).length === 2
+  function findMoveInLines(lines: Line[], target: Player) {
+    for (const line of lines) {
+      const move = findEmptyCellInAlmostFilledLine(line, target)
+      if (move) return move
+    }
+  }
 
-    if (!has) return null
-
-    const index = array.findIndex((item) => !item)
-
-    return index === -1 ? null : index
+  async function waitingAnimation() {
+    isMovePossible.value = false
+    await new Promise((resolve) => setTimeout(resolve, 300))
+    isMovePossible.value = true
   }
 
   async function getComputerMove() {
     if (isGameEnd.value) return
 
+    await waitingAnimation()
+
+    // Выиграть или перекрыть
+
+    const move =
+      findMoveInLines(lines.value, secondPlayer.value) ||
+      findMoveInLines(lines.value, firstPlayer.value)
+
+    if (move) {
+      board.value[move.row]![move.col] = secondPlayer.value
+      return
+    }
+
+    // Забрать центр с вероятностью 50%
+
     const randomInteger = getRandomInteger(1, 10)
+    const centerIndex = Math.floor(board.value.length / 2)
 
-    const rowO = findEmptyCellInAlmostFilledLine(playingField.value, secondPlayer.value)
-    const colO = findEmptyCellInAlmostFilledLine(columns.value, secondPlayer.value)
-    const mdiO = findEmptyIndexInAlmostFilledDiagonal(mainDiagonal.value, secondPlayer.value)
-    const rdiO = findEmptyIndexInAlmostFilledDiagonal(reverseDiagonal.value, secondPlayer.value)
-
-    const rowX = findEmptyCellInAlmostFilledLine(playingField.value, firstPlayer.value)
-    const colX = findEmptyCellInAlmostFilledLine(columns.value, firstPlayer.value)
-    const mdiX = findEmptyIndexInAlmostFilledDiagonal(mainDiagonal.value, firstPlayer.value)
-    const rdiX = findEmptyIndexInAlmostFilledDiagonal(reverseDiagonal.value, firstPlayer.value)
-
-    isMovePossible.value = false
-
-    await new Promise((resolve) => setTimeout(resolve, 300))
-
-    isMovePossible.value = true
-
-    if (rowO.length) {
-      playingField.value[rowO[0]!]![rowO[1]!] = secondPlayer.value
+    if (randomInteger > 5 && !board.value[centerIndex]![centerIndex]) {
+      board.value[centerIndex]![centerIndex] = secondPlayer.value
       return
     }
 
-    if (colO.length) {
-      playingField.value[colO[1]!]![colO[0]!] = secondPlayer.value
-      return
-    }
+    // Забрать случайную свободную ячейку
 
-    if (mdiO !== null) {
-      playingField.value[mdiO]![mdiO] = secondPlayer.value
-      return
-    }
+    const randomEmptyCell = getRandomEmptyCell()
 
-    if (rdiO !== null) {
-      const asd = reverseDiagonal.value.length - 1 - rdiO
-
-      playingField.value[rdiO]![asd] = secondPlayer.value
-      return
-    }
-
-    if (rowX.length) {
-      playingField.value[rowX[0]!]![rowX[1]!] = secondPlayer.value
-      return
-    }
-
-    if (colX.length) {
-      playingField.value[colX[1]!]![colX[0]!] = secondPlayer.value
-      return
-    }
-
-    if (mdiX !== null) {
-      playingField.value[mdiX]![mdiX] = secondPlayer.value
-      return
-    }
-
-    if (rdiX !== null) {
-      const asd = reverseDiagonal.value.length - 1 - rdiX
-
-      playingField.value[rdiX]![asd] = secondPlayer.value
-      return
-    }
-
-    if (randomInteger > 5 && !playingField.value[1]![1]) {
-      playingField.value[1]![1] = secondPlayer.value
-      return
-    }
-
-    const qq = getEmptyCellIndex()
-
-    if (qq) {
-      playingField.value[qq.rowIndex]![qq.cellIndex] = secondPlayer.value
+    if (randomEmptyCell) {
+      board.value[randomEmptyCell.row]![randomEmptyCell.col] = secondPlayer.value
     }
   }
 

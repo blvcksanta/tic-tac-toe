@@ -11,7 +11,7 @@ const gameSettings = useGameSettings()
 const { getComputerMove, isMovePossible } = useGameSoloMod(gameSettings)
 
 const {
-  playingField,
+  board,
   isXWin,
   isOWin,
   isDraw,
@@ -34,7 +34,7 @@ function setIcon(value: string): 'cross' | 'circle' | '' {
 }
 
 function makeMove(rowIndex: number, itemIndex: number) {
-  playingField.value[rowIndex]![itemIndex] = currentPlayer.value
+  board.value[rowIndex]![itemIndex] = currentPlayer.value
   mode[gameMode]()
 }
 
@@ -62,7 +62,7 @@ defineExpose({
 
 <template>
   <div :class="$style.gameField">
-    <div v-for="(row, rowIndex) in playingField" :key="rowIndex" :class="$style.row">
+    <div v-for="(row, rowIndex) in board" :key="rowIndex" :class="$style.row">
       <GameFieldCell
         v-for="(item, itemIndex) in row"
         :key="itemIndex"

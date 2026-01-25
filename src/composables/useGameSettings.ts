@@ -1,56 +1,55 @@
 import { computed, ref } from 'vue'
+import type { Cell, Line, Player } from '@/types/game.type'
 
 export function useGameSettings() {
-  const firstPlayer = ref<'x' | 'o'>('x')
-  const currentPlayer = ref<'x' | 'o'>(firstPlayer.value)
+  const firstPlayer = ref<Player>('x')
+  const currentPlayer = ref<Player>(firstPlayer.value)
 
-  const playingField = ref([
+  const board = ref<Cell[][]>([
     ['', '', ''],
     ['', '', ''],
     ['', '', ''],
   ])
 
-  const mainDiagonal = computed(() => playingField.value.map((row, index) => row[index] ?? ''))
-
-  const reverseDiagonal = computed(() =>
-    playingField.value.map((row, index) => row.at(-(index + 1)) ?? ''),
+  const rowLines = computed((): Line[] =>
+    board.value.map((row, rowIndex) => ({
+      cells: row,
+      coords: row.map((_, col) => ({ row: rowIndex, col })),
+    })),
   )
 
-  const columns = computed(() => {
-    const matrix: string[][] = []
-
-    for (let i = 0; i < playingField.value.length; i++) {
-      matrix.push(playingField.value.map((row) => row[i] ?? ''))
-    }
-
-    return matrix
+  const columnLines = computed((): Line[] => {
+    return Array.from({ length: board.value.length }, (_, col) => ({
+      cells: board.value.map((row) => row[col]!),
+      coords: board.value.map((_, row) => ({ row, col })),
+    }))
   })
 
-  const isXWin = computed(() => isWinner('x'))
-  const isOWin = computed(() => isWinner('o'))
-  const isDraw = computed(() => playingField.value.every((row) => row.every((item) => !!item)))
+  const diagonalLines = computed((): Line[] => [
+    {
+      cells: board.value.map((row, rowIndex) => row[rowIndex]!),
+      coords: board.value.map((_, index) => ({ row: index, col: index })),
+    },
+    {
+      cells: board.value.map((row, rowIndex) => row[board.value.length - 1 - rowIndex]!),
+      coords: board.value.map((_, index) => ({ row: index, col: board.value.length - 1 - index })),
+    },
+  ])
+
+  const lines = computed(() => [...rowLines.value, ...columnLines.value, ...diagonalLines.value])
+
+  const isXWin = computed(() => findMatchesInLine('x'))
+  const isOWin = computed(() => findMatchesInLine('o'))
+  const isDraw = computed(() => board.value.every((row) => row.every((item) => !!item)))
   const isGameEnd = computed(() => isXWin.value || isOWin.value || isDraw.value)
 
-  function findMatchesInMatrix(matrix: string[][], target: 'x' | 'o') {
-    return matrix.some((row) => row.every((elem) => elem === target))
-  }
-
-  function findMatchesInArray(arr: string[], target: 'x' | 'o') {
-    return arr.every((elem) => elem === target)
-  }
-
-  function isWinner(target: 'x' | 'o') {
-    return (
-      findMatchesInMatrix(playingField.value, target) ||
-      findMatchesInMatrix(columns.value, target) ||
-      findMatchesInArray(mainDiagonal.value, target) ||
-      findMatchesInArray(reverseDiagonal.value, target)
-    )
+  function findMatchesInLine(target: Player) {
+    return lines.value.some((line) => line.cells.every((item) => item === target))
   }
 
   function reset() {
     currentPlayer.value = firstPlayer.value
-    playingField.value = [
+    board.value = [
       ['', '', ''],
       ['', '', ''],
       ['', '', ''],
@@ -69,14 +68,12 @@ export function useGameSettings() {
   return {
     currentPlayer,
     firstPlayer,
-    playingField,
-    mainDiagonal,
-    reverseDiagonal,
-    columns,
+    board,
     isXWin,
     isOWin,
     isDraw,
     isGameEnd,
+    lines,
     reset,
     changeFirstPlayer,
     changeCurrentPlayer,
