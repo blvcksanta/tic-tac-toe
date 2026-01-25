@@ -46,7 +46,7 @@ const isDisabled = computed(() => props.disabled || !!props.icon)
     right: 0;
     bottom: 0;
     background: url(../assets/icons/cross-min.svg) no-repeat center / 80%;
-    animation: fadeIn 0.25s ease-in-out forwards;
+    animation: fadeIn 0.3s ease-in-out forwards;
   }
 }
 
