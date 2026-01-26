@@ -72,6 +72,16 @@ const icons: Record<Icons, FunctionalComponent> = {
   &:active {
     box-shadow: inset 0 0 10px 1px rgb(219, 208, 243);
   }
+
+  &:disabled {
+    &:hover {
+      box-shadow: 0 0 10px 1px rgba(219, 208, 243, 0.5);
+    }
+
+    &:active {
+      box-shadow: 0 0 10px 1px rgba(219, 208, 243, 0.5);
+    }
+  }
 }
 
 .iconWrap {
