@@ -22,11 +22,19 @@ function onStepBack() {
 
 <template>
   <div :class="$style.app">
-    <component
-      :is="components[currentComponent]"
-      @select-mode="onSelectMode"
-      @step-back="onStepBack"
-    />
+    <Transition
+      mode="out-in"
+      :enter-active-class="$style.fadeEnterActive"
+      :leave-active-class="$style.fadeLeaveActive"
+      :enter-from-class="currentComponent === 'menu' ? $style.fadeLeaveTo : $style.fadeEnterFrom"
+      :leave-to-class="currentComponent === 'menu' ? $style.fadeEnterFrom : $style.fadeLeaveTo"
+    >
+      <component
+        :is="components[currentComponent]"
+        @select-mode="onSelectMode"
+        @step-back="onStepBack"
+      />
+    </Transition>
   </div>
 </template>
 
@@ -35,5 +43,20 @@ function onStepBack() {
   padding: 0 35px;
   max-width: 375px;
   margin: 0 auto;
+}
+
+.fadeEnterActive,
+.fadeLeaveActive {
+  transition: all 0.4s ease;
+}
+
+.fadeEnterFrom {
+  transform: translateX(50px);
+  opacity: 0;
+}
+
+.fadeLeaveTo {
+  transform: translateX(-50px);
+  opacity: 0;
 }
 </style>
