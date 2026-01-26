@@ -1,0 +1,1 @@
+export const SPAWN_ANIMATION_DURATION = 300

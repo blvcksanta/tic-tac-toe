@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { SPAWN_ANIMATION_DURATION } from '@/config/constants'
 
 const props = defineProps<{
   icon?: 'cross' | 'circle' | '' | null
@@ -16,12 +17,28 @@ const isDisabled = computed(() => props.disabled || !!props.icon)
 <template>
   <button
     :disabled="isDisabled"
+    :style="{
+      '--spawn-animation-duration': `${SPAWN_ANIMATION_DURATION / 1000}s`,
+    }"
     :class="[$style.cell, icon && $style[icon]]"
     @click="emits('click')"
   />
 </template>
 
 <style module lang="scss">
+%icon {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 80%;
+  animation: spawn var(--spawn-animation-duration) ease-in-out forwards;
+}
+
 .cell {
   cursor: pointer;
   padding: 0;
@@ -39,14 +56,9 @@ const isDisabled = computed(() => props.disabled || !!props.icon)
   position: relative;
 
   &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url(../assets/icons/cross-min.svg) no-repeat center / 80%;
-    animation: fadeIn 0.3s ease-in-out forwards;
+    @extend %icon;
+
+    background-image: url(../assets/icons/cross-min.svg);
   }
 }
 
@@ -54,18 +66,13 @@ const isDisabled = computed(() => props.disabled || !!props.icon)
   position: relative;
 
   &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url(../assets/icons/circle-min.svg) no-repeat center / 80%;
-    animation: fadeIn 0.3s ease-in-out forwards;
+    @extend %icon;
+
+    background-image: url(../assets/icons/circle-min.svg);
   }
 }
 
-@keyframes fadeIn {
+@keyframes spawn {
   0% {
     opacity: 0;
     transform: scale(0.9);
