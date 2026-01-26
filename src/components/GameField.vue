@@ -95,6 +95,7 @@ $border: 2px solid #dcd7f0;
 .row {
   line-height: 0;
   font-size: 0;
+  display: flex;
 }
 
 .row + .row {
@@ -102,8 +103,9 @@ $border: 2px solid #dcd7f0;
 }
 
 .cell {
-  height: 80px;
+  aspect-ratio: 1 / 1;
   width: 80px;
+  flex: 1 1 100%;
 }
 
 .cell:first-child {

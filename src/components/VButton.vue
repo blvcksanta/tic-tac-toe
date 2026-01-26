@@ -50,20 +50,28 @@ const icons: Record<Icons, FunctionalComponent> = {
 
 <style module lang="scss">
 .button {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 500;
   display: flex;
   align-items: center;
   gap: 5px;
-  width: 100%;
   cursor: pointer;
-  text-align: start;
   padding: 10px 24px;
   border: none;
   border-radius: 16px;
   font-size: 18px;
   line-height: 1;
   color: #4b5563;
-  box-shadow: 0 0 15px 2px rgba(219, 208, 243, 0.5);
+  box-shadow: 0 0 10px 1px rgba(219, 208, 243, 0.5);
   background-color: #fff;
+
+  &:hover {
+    box-shadow: 0 0 10px 1px rgb(219, 208, 243);
+  }
+
+  &:active {
+    box-shadow: inset 0 0 10px 1px rgb(219, 208, 243);
+  }
 }
 
 .iconWrap {

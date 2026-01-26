@@ -34,7 +34,7 @@ const winnerText = computed(() => {
   color: #2b2436;
   text-align: center;
   font-size: 26px;
-  font-family: sans-serif;
-  min-height: 31px;
+  min-height: 35px;
+  font-weight: 600;
 }
 </style>

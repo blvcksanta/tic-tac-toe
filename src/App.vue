@@ -33,5 +33,7 @@ function onStepBack() {
 <style module lang="scss">
 .app {
   padding: 0 35px;
+  max-width: 375px;
+  margin: 0 auto;
 }
 </style>

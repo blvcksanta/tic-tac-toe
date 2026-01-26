@@ -18,7 +18,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div :class="$style.gameSession">
+  <div>
     <GameWinnerText
       :is-x-win="gameFieldRef?.isXWin"
       :is-o-win="gameFieldRef?.isOWin"
@@ -65,27 +65,21 @@ onMounted(() => {
 </template>
 
 <style module lang="scss">
-.gameSession {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 .winnerText,
 .gameField {
   margin-bottom: 25px;
 }
 
-.info {
-  padding: 0 18px;
-  display: flex;
-  gap: 25px;
-  margin-bottom: 30px;
-}
-
+.info,
 .control {
   display: flex;
+  justify-content: center;
   gap: 25px;
+}
+
+.info {
+  padding: 0 18px;
+  margin-bottom: 30px;
 }
 
 .resetBtn {

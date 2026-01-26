@@ -47,10 +47,10 @@ watchEffect(() => {
 .gameScore {
   gap: 10px;
   font-size: 24px;
-  font-weight: 500;
   outline: 2px solid transparent;
   outline-offset: -2px;
   transition: outline-color 0.2s ease;
+  min-width: 90px;
 }
 
 .outlineColor-x {

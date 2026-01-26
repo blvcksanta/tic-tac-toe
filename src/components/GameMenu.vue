@@ -11,7 +11,7 @@ function asd() {
 </script>
 
 <template>
-  <div :class="$style.gameMenu">
+  <div>
     <h1 :class="$style.title">Tic Tac <span>Toe</span></h1>
     <VButton icon="one-player" size="large" :class="$style.menuButton" @click="asd">
       One player
@@ -32,19 +32,16 @@ function asd() {
     >
       Online
     </VButton>
+
+    <VButton :class="$style.languageBtn"> English </VButton>
   </div>
 </template>
 
 <style module lang="scss">
-.gameMenu {
-  transform: translateY(-40px);
-}
-
 .title {
   text-align: center;
-  font-family: sans-serif;
   font-size: 36px;
-  font-weight: 200;
+  font-weight: 600;
   line-height: 1;
   margin: 0;
   color: #60a5fa;
@@ -55,7 +52,16 @@ function asd() {
   }
 }
 
+.menuButton {
+  width: 100%;
+}
+
 .menuButton + .menuButton {
   margin-top: 20px;
+}
+
+.languageBtn {
+  margin: 0 auto;
+  margin-top: 50px;
 }
 </style>
