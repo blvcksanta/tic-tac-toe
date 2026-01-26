@@ -25,7 +25,7 @@ const winnerText = computed(() => {
 </script>
 
 <template>
-  <p :class="$style.winnerText">{{ winnerText }}</p>
+  <p :class="[$style.winnerText, winnerText && $style.showAnimation]">{{ winnerText }}</p>
 </template>
 
 <style module lang="scss">
@@ -36,5 +36,20 @@ const winnerText = computed(() => {
   font-size: 26px;
   min-height: 35px;
   font-weight: 600;
+}
+
+.showAnimation {
+  animation: show 0.3s ease-out;
+}
+
+@keyframes show {
+  0% {
+    transform: translateY(-15px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 </style>
