@@ -5,6 +5,7 @@ import { SPAWN_ANIMATION_DURATION } from '@/config/constants'
 const props = defineProps<{
   icon?: 'cross' | 'circle' | '' | null
   disabled?: boolean
+  hasZoomAnim?: boolean
 }>()
 
 const emits = defineEmits<{
@@ -20,7 +21,7 @@ const isDisabled = computed(() => props.disabled || !!props.icon)
     :style="{
       '--spawn-animation-duration': `${SPAWN_ANIMATION_DURATION / 1000}s`,
     }"
-    :class="[$style.cell, icon && $style[icon]]"
+    :class="[$style.cell, icon && $style[icon], hasZoomAnim && $style.zoom]"
     @click="emits('click')"
   />
 </template>
@@ -72,6 +73,12 @@ const isDisabled = computed(() => props.disabled || !!props.icon)
   }
 }
 
+.zoom {
+  &::before {
+    animation: zoom 0.3s cubic-bezier(0.61, 1, 0.87, 1) alternate infinite;
+  }
+}
+
 @keyframes spawn {
   0% {
     opacity: 0;
@@ -80,6 +87,15 @@ const isDisabled = computed(() => props.disabled || !!props.icon)
   100% {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+@keyframes zoom {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.1);
   }
 }
 </style>

@@ -18,6 +18,7 @@ const {
   isGameEnd,
   currentPlayer,
   firstPlayer,
+  winningCoords,
   reset,
   changeFirstPlayer,
   changeCurrentPlayer,
@@ -36,6 +37,10 @@ function setIcon(value: string): 'cross' | 'circle' | '' {
 function makeMove(rowIndex: number, itemIndex: number) {
   board.value[rowIndex]![itemIndex] = currentPlayer.value
   mode[gameMode]()
+}
+
+function isWinningPose(rowIndex: number, colIndex: number) {
+  return winningCoords.value?.some((item) => item.row === rowIndex && item.col === colIndex)
 }
 
 defineExpose({
@@ -64,12 +69,13 @@ defineExpose({
   <div :class="$style.gameField">
     <div v-for="(row, rowIndex) in board" :key="rowIndex" :class="$style.row">
       <GameFieldCell
-        v-for="(item, itemIndex) in row"
-        :key="itemIndex"
+        v-for="(item, colIndex) in row"
+        :key="colIndex"
         :icon="setIcon(item)"
         :disabled="isGameEnd || !isMovePossible"
+        :has-zoom-anim="isWinningPose(rowIndex, colIndex)"
         :class="$style.cell"
-        @click="makeMove(rowIndex, itemIndex)"
+        @click="makeMove(rowIndex, colIndex)"
       />
     </div>
   </div>

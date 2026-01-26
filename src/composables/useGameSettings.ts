@@ -43,6 +43,13 @@ export function useGameSettings() {
   const isDraw = computed(() => board.value.every((row) => row.every((item) => !!item)))
   const isGameEnd = computed(() => isXWin.value || isOWin.value || isDraw.value)
 
+  const winningCoords = computed(() => {
+    return lines.value.find(
+      (line) =>
+        line.cells.every((item) => item === 'x') || line.cells.every((item) => item === 'o'),
+    )?.coords
+  })
+
   function findMatchesInLine(target: Player) {
     return lines.value.some((line) => line.cells.every((item) => item === target))
   }
@@ -74,6 +81,7 @@ export function useGameSettings() {
     isDraw,
     isGameEnd,
     lines,
+    winningCoords,
     reset,
     changeFirstPlayer,
     changeCurrentPlayer,
