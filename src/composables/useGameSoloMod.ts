@@ -13,12 +13,10 @@ export function useGameSoloMod(gameSettings: ReturnType<typeof useGameSettings>)
   function getRandomEmptyCell() {
     const emptyCells: Array<Coord> = []
 
-    board.value.forEach((row, rowIndex) => {
-      row.forEach((cell, cellIndex) => {
-        if (cell === '') {
-          emptyCells.push({ row: rowIndex, col: cellIndex })
-        }
-      })
+    lines.value.forEach((line) => {
+      const emptyCellIndex = line.cells.findIndex((item) => item === '')
+
+      if (emptyCellIndex !== -1) emptyCells.push(line.coords[emptyCellIndex]!)
     })
 
     if (emptyCells.length === 0) {
@@ -27,6 +25,16 @@ export function useGameSoloMod(gameSettings: ReturnType<typeof useGameSettings>)
 
     const randomIndex = getRandomInteger(0, emptyCells.length - 1)
     return emptyCells[randomIndex]
+  }
+
+  function takeCenter(): Coord | undefined {
+    const randomInteger = getRandomInteger(1, 10)
+    const centerIndex = Math.floor(board.value.length / 2)
+    const hasValueInCenter = !!board.value[centerIndex]![centerIndex]
+
+    if (randomInteger < 5 || hasValueInCenter) return
+
+    return { row: centerIndex, col: centerIndex }
   }
 
   function findEmptyCellInAlmostFilledLine(line: Line, target: Player) {
@@ -56,34 +64,15 @@ export function useGameSoloMod(gameSettings: ReturnType<typeof useGameSettings>)
 
     await waitingAnimation()
 
-    // Выиграть или перекрыть
-
     const move =
       findMoveInLines(lines.value, secondPlayer.value) ||
-      findMoveInLines(lines.value, firstPlayer.value)
+      findMoveInLines(lines.value, firstPlayer.value) ||
+      takeCenter() ||
+      getRandomEmptyCell()
 
-    if (move) {
-      board.value[move.row]![move.col] = secondPlayer.value
-      return
-    }
+    if (!move) return
 
-    // Забрать центр с вероятностью 50%
-
-    const randomInteger = getRandomInteger(1, 10)
-    const centerIndex = Math.floor(board.value.length / 2)
-
-    if (randomInteger > 5 && !board.value[centerIndex]![centerIndex]) {
-      board.value[centerIndex]![centerIndex] = secondPlayer.value
-      return
-    }
-
-    // Забрать случайную свободную ячейку
-
-    const randomEmptyCell = getRandomEmptyCell()
-
-    if (randomEmptyCell) {
-      board.value[randomEmptyCell.row]![randomEmptyCell.col] = secondPlayer.value
-    }
+    board.value[move.row]![move.col] = secondPlayer.value
   }
 
   return {
