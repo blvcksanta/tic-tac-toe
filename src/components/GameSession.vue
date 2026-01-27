@@ -5,6 +5,7 @@ import VButton from './VButton.vue'
 import GameWinnerText from './GameWinnerText.vue'
 import GameScore from './GameScore.vue'
 import type { GameMode } from '@/types/game.type'
+import { useThrottleFn } from '@vueuse/core'
 
 const emits = defineEmits<{
   stepBack: []
@@ -12,6 +13,11 @@ const emits = defineEmits<{
 
 const gameFieldRef = useTemplateRef<InstanceType<typeof GameField>>('gameField')
 const gameMode = inject<Ref<GameMode>>('mode')
+const throttledReset = useThrottleFn(reset, 1000)
+
+function reset() {
+  gameFieldRef.value?.reset()
+}
 </script>
 
 <template>
@@ -55,7 +61,7 @@ const gameMode = inject<Ref<GameMode>>('mode')
         icon="refresh"
         :icon-class="$style.customIcon"
         :class="$style.resetBtn"
-        @click="gameFieldRef?.reset"
+        @click="throttledReset"
       />
     </div>
   </div>

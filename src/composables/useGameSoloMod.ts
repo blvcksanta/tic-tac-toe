@@ -1,4 +1,5 @@
 import { computed, ref } from 'vue'
+import { promiseTimeout } from '@vueuse/core'
 import { getRandomInteger } from '@/lib/utils'
 import { SPAWN_ANIMATION_DURATION } from '@/config/constants'
 import type { useGameSettings } from './useGameSettings'
@@ -56,7 +57,7 @@ export function useGameSoloMod(gameSettings: ReturnType<typeof useGameSettings>)
 
   async function waitingAnimation() {
     isMovePossible.value = false
-    await new Promise((resolve) => setTimeout(resolve, SPAWN_ANIMATION_DURATION))
+    await promiseTimeout(SPAWN_ANIMATION_DURATION)
     isMovePossible.value = true
   }
 
