@@ -19,15 +19,22 @@ function closeModal() {
 
 <template>
   <Teleport to="body">
-    <div v-if="isShow" :class="$style.modal">
-      <div ref="modalContainerRef" :class="$style.container">
-        <!-- <button :class="$style.closeBtn" @click="closeModal">
-          <CloseIcon :class="$style.closeIcon" />
-        </button> -->
+    <Transition
+      :enter-active-class="$style.enterActive"
+      :leave-active-class="$style.leaveActive"
+      :enter-from-class="$style.enterFrom"
+      :leave-to-class="$style.leaveTo"
+    >
+      <div v-if="isShow" :class="$style.modal">
+        <div ref="modalContainerRef" :class="$style.container">
+          <!-- <button :class="$style.closeBtn" @click="closeModal">
+            <CloseIcon :class="$style.closeIcon" />
+          </button> -->
 
-        <slot />
+          <slot />
+        </div>
       </div>
-    </div>
+    </Transition>
   </Teleport>
 </template>
 
@@ -67,4 +74,29 @@ function closeModal() {
 // .closeIcon {
 //   width: 100%;
 // }
+
+.enterActive,
+.leaveActive {
+  transition: all 0.5s ease-in-out;
+
+  .container {
+    transition: all 0.5s ease-in-out;
+  }
+}
+
+.leaveTo {
+  opacity: 0;
+
+  .container {
+    transform: translate(-50%, -30%);
+  }
+}
+
+.enterFrom {
+  opacity: 0;
+
+  .container {
+    transform: translate(-50%, -30%);
+  }
+}
 </style>

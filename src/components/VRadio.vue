@@ -1,15 +1,20 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends string">
 const { checked = false, value } = defineProps<{
-  value: string
+  value: T
   checked?: boolean
 }>()
 
-const model = defineModel<string>({
+const emits = defineEmits<{
+  click: [value: T]
+}>()
+
+const model = defineModel<T>({
   required: true,
 })
 
 function onClick() {
   model.value = value
+  emits('click', value)
 }
 </script>
 

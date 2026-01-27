@@ -23,6 +23,10 @@ const languageButtonText = computed(() => LANGUAGES[currentLanguage.value])
 function openModal() {
   isShowModal.value = true
 }
+
+function closeModal() {
+  isShowModal.value = false
+}
 </script>
 
 <template>
@@ -64,6 +68,7 @@ function openModal() {
           :key="value"
           :checked="currentLanguage === value"
           :class="$style.radio"
+          @click="closeModal"
         >
           {{ label }}
         </VRadio>
