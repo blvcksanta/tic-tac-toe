@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import VButton from './VButton.vue'
+import type { GameMode } from '@/types/game.type'
 
 const emits = defineEmits<{
-  selectMode: [mode: 'one' | 'two' | 'online']
+  selectMode: [mode: GameMode]
 }>()
 
 function asd() {

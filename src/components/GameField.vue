@@ -2,9 +2,10 @@
 import GameFieldCell from './GameFieldCell.vue'
 import { useGameSettings } from '@/composables/useGameSettings'
 import { useGameSoloMod } from '@/composables/useGameSoloMod'
+import type { GameMode } from '@/types/game.type'
 
 const { gameMode = 'one' } = defineProps<{
-  gameMode?: 'one' | 'two' | 'online'
+  gameMode?: GameMode
 }>()
 
 const gameSettings = useGameSettings()

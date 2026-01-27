@@ -1,23 +1,27 @@
 <script setup lang="ts">
+import { provide, ref } from 'vue'
 import GameMenu from '@/components/GameMenu.vue'
 import GameSession from '@/components/GameSession.vue'
-import { ref } from 'vue'
-
-const currentComponent = ref<keyof typeof components>('menu')
+import type { GameMode } from '@/types/game.type'
 
 const components = {
   menu: GameMenu,
   session: GameSession,
 }
 
-function onSelectMode(mode: 'one' | 'two' | 'online') {
-  sessionStorage.setItem('mode', mode)
+const currentComponent = ref<keyof typeof components>('menu')
+const gameMode = ref<GameMode>('one')
+
+function onSelectMode(mode: GameMode) {
+  gameMode.value = mode
   currentComponent.value = 'session'
 }
 
 function onStepBack() {
   currentComponent.value = 'menu'
 }
+
+provide('mode', gameMode)
 </script>
 
 <template>

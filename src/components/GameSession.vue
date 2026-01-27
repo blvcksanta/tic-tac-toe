@@ -1,20 +1,17 @@
 <script setup lang="ts">
-import { onMounted, ref, useTemplateRef } from 'vue'
+import { inject, useTemplateRef, type Ref } from 'vue'
 import GameField from './GameField.vue'
 import VButton from './VButton.vue'
 import GameWinnerText from './GameWinnerText.vue'
 import GameScore from './GameScore.vue'
+import type { GameMode } from '@/types/game.type'
 
 const emits = defineEmits<{
   stepBack: []
 }>()
 
 const gameFieldRef = useTemplateRef<InstanceType<typeof GameField>>('gameField')
-const gameMode = ref<'one' | 'two' | 'online' | null>(null)
-
-onMounted(() => {
-  gameMode.value = sessionStorage.getItem('mode') as 'one' | 'two' | 'online'
-})
+const gameMode = inject<Ref<GameMode>>('mode')
 </script>
 
 <template>
@@ -26,7 +23,7 @@ onMounted(() => {
       :class="$style.winnerText"
     />
 
-    <GameField ref="gameField" :game-mode="gameMode ?? undefined" :class="$style.gameField" />
+    <GameField ref="gameField" :game-mode="gameMode" :class="$style.gameField" />
 
     <div :class="$style.info">
       <GameScore
