@@ -40,8 +40,9 @@ const icons: Record<Icons, FunctionalComponent> = {
     @click="emits('click')"
   >
     <span v-if="icon || $slots.icon" :class="$style.iconWrap">
-      <component :is="icons[icon]" v-if="icon" :class="iconClass" />
-      <slot name="icon" />
+      <slot name="icon">
+        <component :is="icons[icon]" v-if="icon" :class="iconClass" />
+      </slot>
     </span>
 
     <slot />
