@@ -1,16 +1,9 @@
 <script setup lang="ts">
-import { onClickOutside } from '@vueuse/core'
-import { useTemplateRef } from 'vue'
-
 // import CloseIcon from '@/assets/icons/close.svg?component'
 
 const isShow = defineModel<boolean>({
   required: true,
 })
-
-const modalContainerRef = useTemplateRef('modalContainerRef')
-
-onClickOutside(modalContainerRef, closeModal)
 
 function closeModal() {
   isShow.value = false
@@ -25,8 +18,8 @@ function closeModal() {
       :enter-from-class="$style.enterFrom"
       :leave-to-class="$style.leaveTo"
     >
-      <div v-if="isShow" :class="$style.modal">
-        <div ref="modalContainerRef" :class="$style.container">
+      <div v-if="isShow" :class="$style.modal" @click.self="closeModal">
+        <div :class="$style.container">
           <!-- <button :class="$style.closeBtn" @click="closeModal">
             <CloseIcon :class="$style.closeIcon" />
           </button> -->

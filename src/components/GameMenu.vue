@@ -66,7 +66,6 @@ function closeModal() {
           v-for="(label, value) in LANGUAGES"
           :value="value"
           :key="value"
-          :checked="currentLanguage === value"
           :class="$style.radio"
           @click="closeModal"
         >

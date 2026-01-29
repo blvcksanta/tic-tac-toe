@@ -1,4 +1,6 @@
 <script setup lang="ts" generic="T extends string">
+import { computed, ref } from 'vue'
+
 const { checked = false, value } = defineProps<{
   value: T
   checked?: boolean
@@ -12,6 +14,10 @@ const model = defineModel<T>({
   required: true,
 })
 
+const isFocused = ref(false)
+
+const isChecked = computed(() => checked || value === model.value)
+
 function onClick() {
   model.value = value
   emits('click', value)
@@ -19,12 +25,27 @@ function onClick() {
 </script>
 
 <template>
-  <label :class="[$style.radio, checked && $style.checked]" @click="onClick">
-    <input type="radio" name="language" :value="value" :class="$style.visibilityHidden" />
+  <label
+    :class="[
+      $style.radio,
+      {
+        [`${$style.focused}`]: isFocused,
+        [`${$style.checked}`]: isChecked,
+      },
+    ]"
+    @click="onClick"
+  >
+    <input
+      type="radio"
+      name="language"
+      :value="value"
+      :checked="isChecked"
+      :class="$style.visibilityHidden"
+      @focusin="isFocused = true"
+      @focusout="isFocused = false"
+    />
 
-    <span>
-      <slot />
-    </span>
+    <slot />
   </label>
 </template>
 
@@ -41,6 +62,10 @@ function onClick() {
 .checked {
   outline-color: rgb(219, 208, 243);
   background-color: rgba(219, 208, 243, 0.2);
+}
+
+.focused {
+  outline-color: #000;
 }
 
 .visibilityHidden {
