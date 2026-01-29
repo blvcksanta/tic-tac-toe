@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import type { LanguageTemplate } from '@/assets/i18n/i18n.type'
 
 const props = defineProps<{
   isXWin?: boolean
@@ -7,17 +9,19 @@ const props = defineProps<{
   isDraw?: boolean
 }>()
 
+const { t } = useI18n<[LanguageTemplate]>({ useScope: 'global' })
+
 const winnerText = computed(() => {
   if (props.isXWin) {
-    return 'X won'
+    return t('winnerText.x')
   }
 
   if (props.isOWin) {
-    return 'O won'
+    return t('winnerText.o')
   }
 
   if (props.isDraw) {
-    return 'Draw'
+    return t('winnerText.draw')
   }
 
   return ''

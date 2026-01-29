@@ -10,9 +10,7 @@ const emits = defineEmits<{
   click: [value: T]
 }>()
 
-const model = defineModel<T>({
-  required: true,
-})
+const model = defineModel<T>()
 
 const isFocused = ref(false)
 

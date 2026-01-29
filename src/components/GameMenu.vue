@@ -3,22 +3,28 @@ import { computed, ref } from 'vue'
 import VButton from './VButton.vue'
 import VModal from './VModal.vue'
 import VRadio from './VRadio.vue'
+import { useI18n } from 'vue-i18n'
+import { LANGUAGES } from '@/assets/i18n'
+import type { Language } from '@/assets/i18n/i18n.type'
+import type { LanguageTemplate } from '@/assets/i18n/i18n.type'
 import type { GameMode } from '@/types/game.type'
 
 const emits = defineEmits<{
   selectMode: [mode: GameMode]
 }>()
 
-const LANGUAGES = {
-  en: 'English',
-  ru: 'Русский',
-}
-
-const currentLanguage = ref<'en' | 'ru'>('en')
+const { t, locale } = useI18n<[LanguageTemplate], Language>({ useScope: 'global' })
 
 const isShowModal = ref(false)
 
-const languageButtonText = computed(() => LANGUAGES[currentLanguage.value])
+const title = computed(() => {
+  const title = t('title').split(' ')
+
+  return {
+    firstPart: title.slice(0, title.length - 1).join(' '),
+    lastPart: title.at(-1),
+  }
+})
 
 function openModal() {
   isShowModal.value = true
@@ -27,18 +33,27 @@ function openModal() {
 function closeModal() {
   isShowModal.value = false
 }
+
+function changeLanguage(lang: Language) {
+  closeModal()
+  locale.value = lang
+  localStorage.setItem('locale', lang)
+}
 </script>
 
 <template>
   <div>
-    <h1 :class="$style.title">Tic Tac <span>Toe</span></h1>
+    <h1 :class="$style.title">
+      {{ title.firstPart }}
+      <span>{{ title.lastPart }}</span>
+    </h1>
     <VButton
       icon="one-player"
       size="large"
       :class="$style.menuButton"
       @click="emits('selectMode', 'one')"
     >
-      One player
+      {{ t('gameModes.one') }}
     </VButton>
     <VButton
       icon="two-player"
@@ -46,7 +61,7 @@ function closeModal() {
       :class="$style.menuButton"
       @click="emits('selectMode', 'two')"
     >
-      Two player
+      {{ t('gameModes.two') }}
     </VButton>
     <VButton
       icon="global"
@@ -54,20 +69,20 @@ function closeModal() {
       :class="$style.menuButton"
       @click="emits('selectMode', 'online')"
     >
-      Online
+      {{ t('gameModes.online') }}
     </VButton>
 
-    <VButton :class="$style.languageBtn" @click="openModal"> {{ languageButtonText }} </VButton>
+    <VButton :class="$style.languageBtn" @click="openModal"> {{ t('localeButton') }} </VButton>
 
     <VModal v-model="isShowModal">
       <div :class="$style.radioWrap">
         <VRadio
-          v-model="currentLanguage"
           v-for="(label, value) in LANGUAGES"
           :value="value"
           :key="value"
+          :checked="value === locale"
           :class="$style.radio"
-          @click="closeModal"
+          @click="changeLanguage"
         >
           {{ label }}
         </VRadio>
